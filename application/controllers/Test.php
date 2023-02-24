@@ -8,7 +8,7 @@ class Test extends CI_Controller {
   }
 
   function a() {
-    $user = array('email' => 'a', 'password' => password_hash('a', PASSWORD_DEFAULT));
+    $user = array('username' => 'a', 'password' => password_hash('a', PASSWORD_DEFAULT));
     $this->user_model->save($user);
   }
 

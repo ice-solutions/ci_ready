@@ -3,14 +3,14 @@
 <table>
   <tr>
     <th>Id</th>
-    <th>Email</th>
+    <th>Username</th>
     <th>Password</th>
     <th></th>
   </tr>
   <?php foreach ($users as $user): ?>
   <tr>
     <td><?php echo $user->id; ?></td>
-    <td><?php echo $user->email; ?></td>
+    <td><?php echo $user->username; ?></td>
     <td><?php echo $user->password; ?></td>
     <td>
       <?php echo anchor('users/edit/' . $user->id, 'Edit'); ?>

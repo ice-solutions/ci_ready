@@ -20,8 +20,8 @@ class Home extends CI_Controller {
   function login() {
     $data['message'] = '';
     if ($this->input->post()) {
-      list($email, $password) = login_form();
-      $user = $this->user_model->read_by_email_and_password($email, $password);
+      list($username, $password) = login_form();
+      $user = $this->user_model->read_by_username_and_password($username, $password);
       if ($user) {
         session('user_id', $user->id);
         redirect('dashboard');

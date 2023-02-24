@@ -14,8 +14,8 @@ class User_model extends CI_Model {
     return $this->db->get_where('users', array('id' => $id))->row();
   }
 
-  function read_by_email_and_password($email, $password) {
-    $this->db->where('email', $email);
+  function read_by_username_and_password($username, $password) {
+    $this->db->where('username', $username);
     $user = $this->db->get('users')->row();
     if ($user && password_verify($password, $user->password)) {
       return $user;

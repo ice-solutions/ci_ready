@@ -10,8 +10,8 @@
   <?php endif; ?>
   <?php echo form_open('login'); ?>
   <p>Email<br>
-    <?php echo form_input('email', $this->input->post('email'), 'class="form-control form-control-sm"'); ?>
-    <?php echo form_error('email'); ?>
+    <?php echo form_input('username', $this->input->post('username'), 'class="form-control form-control-sm"'); ?>
+    <?php echo form_error('username'); ?>
   </p>
   <p>Password<br>
     <?php echo form_password('password', '', 'class="form-control form-control-sm"'); ?>
