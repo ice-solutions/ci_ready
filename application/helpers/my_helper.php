@@ -1,5 +1,53 @@
 <?php
 
+function ifempty($value, $default) {
+  return $value ? $value : $default;
+}
+
+function set_output_profiler($enable_profiler) {
+  $obj = &get_instance();
+  if ($enable_profiler) {
+    header('Content-Type: text/html');
+    $obj->output->enable_profiler($enable_profiler);
+  }
+
+}
+
+function load_view_if($condition, $view) {
+  if ($condition) {
+    $obj = &get_instance();
+    $obj->load->view($view);
+  }
+}
+
+function echo_if($condition, $message, $prefix = '', $suffix = '') {
+  if ($condition) {
+    echo $prefix . $message . $suffix;
+  }
+}
+
+function is_environment_development() {
+  return ENVIRONMENT == 'development'
+    || ENVIRONMENT == 'bagdok.online.test';
+}
+
+function beautiful_number_format($number, $decimal) {
+  $limit = 1000000;
+  if ($number > $limit) {
+    $n = round($number / $limit);
+    return $n . 'M';
+  }
+  return number_format($number, $decimal);
+}
+
+function random_numbers($start, $end, $quantity) {
+  $numbers = array();
+  for ($i=0; $i<$quantity/($end-$start); $i++) {
+    $numbers = array_merge($numbers, range($start, $end));
+  }
+  shuffle($numbers);
+  return array_slice($numbers,0,$quantity);
+}
 
 function fcm_multiple_send($server_key, $tokens, $title, $body) {
   $responses = array();
@@ -249,6 +297,27 @@ function print_pre($text, $pre_text = '') {
 
 function trimmed_base_url() {
   return trim(base_url(), '/');
+}
+
+function get_bitly($token, $long_url) {
+  $ch = curl_init();
+
+  $url = 'https://api-ssl.bitly.com/v4/shorten';
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  $data = array('long_url' => $long_url);
+  $params = json_encode($data);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Authorization: Bearer ' . $token
+  ));
+
+  $output = curl_exec($ch);
+
+  curl_close($ch);
+  return json_decode($output);
 }
 
 function api_get($url, $data) {
