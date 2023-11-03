@@ -1,5 +1,11 @@
 <?php
 
+function validation_errors_array() {
+  $obj = &get_instance();
+  $validation_errors = $obj->form_validation->error_array();
+  return $validation_errors;
+}
+
 function ifempty($value, $default) {
   return $value ? $value : $default;
 }
@@ -49,10 +55,10 @@ function random_numbers($start, $end, $quantity) {
   return array_slice($numbers,0,$quantity);
 }
 
-function fcm_multiple_send($server_key, $tokens, $title, $body) {
+function fcm_multiple_send($server_key, $tokens, $title, $body, $icon = null) {
   $responses = array();
   foreach ($tokens as $token) {
-    $r = fcm_send($server_key, $token, $title, $body);
+    $r = fcm_send($server_key, $token, $title, $body, $icon);
     $responses[] = array(
       'token' => $token,
       'response' => $r,
@@ -61,7 +67,7 @@ function fcm_multiple_send($server_key, $tokens, $title, $body) {
   return $responses;
 }
 
-function fcm_send($server_key, $token, $title, $body) {
+function fcm_send($server_key, $token, $title, $body, $icon = null) {
   $url = "https://fcm.googleapis.com/fcm/send";
   $headers = array(
     'Authorization: key=' . $server_key,
@@ -73,9 +79,11 @@ function fcm_send($server_key, $token, $title, $body) {
       'message' => $title,
       'title' => $body,
       'sound' => 'default',
-      'icon' => 'https://bagdok.online/public/themes/gomo/assets/img/logo.png',
     ),
   );
+  if ($icon) {
+  	$data['icon'] => $icon;
+  }
   return api_post2($url, $data, $headers);
 }
 
@@ -289,6 +297,58 @@ function session($key, $value = '') {
   return $obj->session->userdata($key);
 }
 
+function fcm_multiple_send($server_key, $tokens, $title, $body, $icon = null) {
+  $responses = array();
+  foreach ($tokens as $token) {
+    $r = fcm_send($server_key, $token, $title, $body, $icon);
+    $responses[] = array(
+      'token' => $token,
+      'response' => $r,
+    );
+  }
+  return $responses;
+}
+
+function fcm_send($server_key, $token, $title, $body, $icon = null) {
+  $url = "https://fcm.googleapis.com/fcm/send";
+  $headers = array(
+    'Authorization: key=' . $server_key,
+    'Content-Type: application/json'
+  );
+  $data = array(
+    'to' => $token,
+    'notification' => array(
+      'message' => $title,
+      'title' => $body,
+      'sound' => 'default',
+    ),
+  );
+  if ($icon) {
+  	$data['icon'] => $icon;
+  }
+  return api_post2($url, $data, $headers);
+}
+
+function api_post2($url, $data, $headers = array(), $username = '', $password = '') {
+  $ch = curl_init();
+
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+  if ($username && $password) {
+    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+  }
+
+  $output = curl_exec($ch);
+
+  curl_close($ch);
+  return $output;
+}
+
 function print_pre($text, $pre_text = '') {
   echo $pre_text . '<pre>';
   print_r($text);
@@ -324,7 +384,9 @@ function api_get($url, $data) {
   $curl = curl_init();
 
   $params = $url . '?' . http_build_query($data);
-  // echo $params;
+  if (config_item('enable_profiler')) {
+    echo $params;
+  }
   curl_setopt($curl, CURLOPT_URL, $params);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 //  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
