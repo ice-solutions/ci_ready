@@ -55,58 +55,6 @@ function random_numbers($start, $end, $quantity) {
   return array_slice($numbers,0,$quantity);
 }
 
-function fcm_multiple_send($server_key, $tokens, $title, $body, $icon = null) {
-  $responses = array();
-  foreach ($tokens as $token) {
-    $r = fcm_send($server_key, $token, $title, $body, $icon);
-    $responses[] = array(
-      'token' => $token,
-      'response' => $r,
-    );
-  }
-  return $responses;
-}
-
-function fcm_send($server_key, $token, $title, $body, $icon = null) {
-  $url = "https://fcm.googleapis.com/fcm/send";
-  $headers = array(
-    'Authorization: key=' . $server_key,
-    'Content-Type: application/json'
-  );
-  $data = array(
-    'to' => $token,
-    'notification' => array(
-      'message' => $title,
-      'title' => $body,
-      'sound' => 'default',
-    ),
-  );
-  if ($icon) {
-  	$data['icon'] => $icon;
-  }
-  return api_post2($url, $data, $headers);
-}
-
-function api_post2($url, $data, $headers = array(), $username = '', $password = '') {
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_POST, 1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-  if ($username && $password) {
-    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-  }
-
-  $output = curl_exec($ch);
-
-  curl_close($ch);
-  return $output;
-}
-
 function phone($href, $text = '') {
   $text = $text ? $text : $href;
   return '<a href="tel:' . $href . '">' . $text . '</a>';
@@ -324,7 +272,7 @@ function fcm_send($server_key, $token, $title, $body, $icon = null) {
     ),
   );
   if ($icon) {
-  	$data['icon'] => $icon;
+  	$data['icon'] = $icon;
   }
   return api_post2($url, $data, $headers);
 }
@@ -385,7 +333,7 @@ function api_get($url, $data) {
 
   $params = $url . '?' . http_build_query($data);
   if (config_item('enable_profiler')) {
-    echo $params;
+    echo $params . '<br>';
   }
   curl_setopt($curl, CURLOPT_URL, $params);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
