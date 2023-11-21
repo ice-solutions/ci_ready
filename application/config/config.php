@@ -27,6 +27,7 @@ date_default_timezone_set('Asia/Manila');
  */
 $config['base_url'] = 'http://localhost:8888/iceithq/ci_ready';
 $config['enable_profiler'] = true;
+$config['theme'] = 'default';
 
 /*
   |--------------------------------------------------------------------------

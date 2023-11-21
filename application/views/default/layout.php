@@ -1,5 +1,5 @@
 
-<?php $this->load->view('_head'); ?>
+<?php $this->load->view(get_theme() . '/_head'); ?>
 
 <div class="container">
 
