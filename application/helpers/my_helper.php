@@ -1,54 +1,58 @@
 <?php
 
-
-function fcm_multiple_send($server_key, $tokens, $title, $body) {
-  $responses = array();
-  foreach ($tokens as $token) {
-    $r = fcm_send($server_key, $token, $title, $body);
-    $responses[] = array(
-      'token' => $token,
-      'response' => $r,
-    );
-  }
-  return $responses;
+function validation_errors_array() {
+  $obj = &get_instance();
+  $validation_errors = $obj->form_validation->error_array();
+  return $validation_errors;
 }
 
-function fcm_send($server_key, $token, $title, $body) {
-  $url = "https://fcm.googleapis.com/fcm/send";
-  $headers = array(
-    'Authorization: key=' . $server_key,
-    'Content-Type: application/json'
-  );
-  $data = array(
-    'to' => $token,
-    'notification' => array(
-      'message' => $title,
-      'title' => $body,
-      'sound' => 'default',
-      'icon' => 'https://bagdok.online/public/themes/gomo/assets/img/logo.png',
-    ),
-  );
-  return api_post2($url, $data, $headers);
+function ifempty($value, $default) {
+  return $value ? $value : $default;
 }
 
-function api_post2($url, $data, $headers = array(), $username = '', $password = '') {
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_POST, 1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-  if ($username && $password) {
-    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+function set_output_profiler($enable_profiler) {
+  $obj = &get_instance();
+  if ($enable_profiler) {
+    header('Content-Type: text/html');
+    $obj->output->enable_profiler($enable_profiler);
   }
 
-  $output = curl_exec($ch);
+}
 
-  curl_close($ch);
-  return $output;
+function load_view_if($condition, $view) {
+  if ($condition) {
+    $obj = &get_instance();
+    $obj->load->view($view);
+  }
+}
+
+function echo_if($condition, $message, $prefix = '', $suffix = '') {
+  if ($condition) {
+    echo $prefix . $message . $suffix;
+  }
+}
+
+function is_environment_development() {
+  return ENVIRONMENT == 'development'
+    || ENVIRONMENT == 'bagdok.online.test';
+}
+
+function beautiful_number_format($number, $decimal) {
+  $limit = 1000000;
+  if ($number > $limit) {
+    $n = round($number / $limit);
+    return $n . 'M';
+  }
+  return number_format($number, $decimal);
+}
+
+function random_numbers($start, $end, $quantity) {
+  $numbers = array();
+  for ($i=0; $i<$quantity/($end-$start); $i++) {
+    $numbers = array_merge($numbers, range($start, $end));
+  }
+  shuffle($numbers);
+  return array_slice($numbers,0,$quantity);
 }
 
 function phone($href, $text = '') {
@@ -241,6 +245,58 @@ function session($key, $value = '') {
   return $obj->session->userdata($key);
 }
 
+function fcm_multiple_send($server_key, $tokens, $title, $body, $icon = null) {
+  $responses = array();
+  foreach ($tokens as $token) {
+    $r = fcm_send($server_key, $token, $title, $body, $icon);
+    $responses[] = array(
+      'token' => $token,
+      'response' => $r,
+    );
+  }
+  return $responses;
+}
+
+function fcm_send($server_key, $token, $title, $body, $icon = null) {
+  $url = "https://fcm.googleapis.com/fcm/send";
+  $headers = array(
+    'Authorization: key=' . $server_key,
+    'Content-Type: application/json'
+  );
+  $data = array(
+    'to' => $token,
+    'notification' => array(
+      'message' => $title,
+      'title' => $body,
+      'sound' => 'default',
+    ),
+  );
+  if ($icon) {
+  	$data['icon'] = $icon;
+  }
+  return api_post2($url, $data, $headers);
+}
+
+function api_post2($url, $data, $headers = array(), $username = '', $password = '') {
+  $ch = curl_init();
+
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+  if ($username && $password) {
+    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+  }
+
+  $output = curl_exec($ch);
+
+  curl_close($ch);
+  return $output;
+}
+
 function print_pre($text, $pre_text = '') {
   echo $pre_text . '<pre>';
   print_r($text);
@@ -251,11 +307,34 @@ function trimmed_base_url() {
   return trim(base_url(), '/');
 }
 
+function get_bitly($token, $long_url) {
+  $ch = curl_init();
+
+  $url = 'https://api-ssl.bitly.com/v4/shorten';
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  $data = array('long_url' => $long_url);
+  $params = json_encode($data);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Authorization: Bearer ' . $token
+  ));
+
+  $output = curl_exec($ch);
+
+  curl_close($ch);
+  return json_decode($output);
+}
+
 function api_get($url, $data) {
   $curl = curl_init();
 
   $params = $url . '?' . http_build_query($data);
-  // echo $params;
+  if (config_item('enable_profiler')) {
+    echo $params . '<br>';
+  }
   curl_setopt($curl, CURLOPT_URL, $params);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 //  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
