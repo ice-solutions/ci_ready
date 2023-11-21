@@ -11,8 +11,8 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"iescarro/cigen": "^0.3.4",
-		"mikey179/vfsStream": "1.1.*",
+		"i4mn00n3/cigen": "^0.3.4",
+		"mikey179/vfsstream": "1.1.*",
 		"phpunit/phpunit": "4.* || 5.*"
 	},
 	"suggest": {
