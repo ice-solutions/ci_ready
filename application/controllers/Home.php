@@ -11,8 +11,11 @@ class Home extends CI_Controller {
     $data['message'] = '';
     if ($this->input->post()) {
       $user = register_form();
-      $this->user_model->save($user);
-      redirect('login');
+      register_form_validate();
+      if ($this->form_validation->run() != FALSE) {
+        $this->user_model->save($user);
+        redirect('login');
+      }
     }
     $this->load->view(get_theme() . '/home/register', $data);
   }
