@@ -21,6 +21,24 @@ function register_form() {
   return $user;
 }
 
+function profile_form() {
+  $obj = &get_instance();
+  $user = array(
+    'email' => $obj->input->post('email'),
+  );
+  $password = $obj->input->post('password');
+  if ($password) {
+    $encrypted_password = password_hash($password, PASSWORD_BCRYPT);
+    $user['password'] = $encrypted_password;
+  }
+  return $user;
+}
+
+function profile_form_validate() {
+  $obj = &get_instance();
+  $obj->form_validation->set_rules('email', 'Email', 'required');
+}
+
 function user_form() {
   $obj = &get_instance();
   return array(
