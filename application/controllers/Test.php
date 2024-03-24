@@ -12,14 +12,4 @@ class Test extends CI_Controller {
     $this->load->view('test/hello', $data);
   }
 
-  function run_all() {
-    $this->db->truncate('users');
-    $this->create_user();
-  }
-
-  function create_user() {
-    $user = array('username' => 'demo', 'password' => password_hash('password', PASSWORD_BCRYPT));
-    $this->user_model->save($user);
-  }
-
 }
