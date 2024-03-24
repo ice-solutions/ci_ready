@@ -1,17 +1,13 @@
 <h3>Users</h3>
-<p><?php echo anchor('users/add', 'Add User'); ?></p>
-<table>
+<p><?php echo anchor('users/add', 'Add user', 'class="btn btn-success"'); ?></p>
+<table class="table table-hover">
   <tr>
-    <th>Id</th>
-    <th>Username</th>
-    <th>Password</th>
+    <th>Email</th>
     <th></th>
   </tr>
   <?php foreach ($users as $user): ?>
   <tr>
-    <td><?php echo $user->id; ?></td>
-    <td><?php echo $user->username; ?></td>
-    <td><?php echo $user->password; ?></td>
+    <td><?php echo $user->email; ?></td>
     <td>
       <?php echo anchor('users/edit/' . $user->id, 'Edit'); ?>
       <a href='javascript:void(0);' onclick="deleteUser('<?php echo $user->id; ?>', <?php echo $user->id; ?>);" title="Delete">Delete</a>
