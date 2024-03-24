@@ -24,6 +24,7 @@ class Home extends CI_Controller {
       $user = $this->user_model->read_by_username_and_password($username, $password);
       if ($user) {
         session('user_id', $user->id);
+        session('email', $user->email);
         redirect('dashboard');
       } else {
         $data['message'] = 'Invalid username or password. Please try again!';
