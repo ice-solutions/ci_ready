@@ -2,7 +2,7 @@
 
 class Layout {
 
-  function __construct($layout = 'layout') {
+  function __construct($layout = 'user_layout') {
     $this->layout = $layout;
     $this->theme = config_item('theme');
     $this->obj = &get_instance();
