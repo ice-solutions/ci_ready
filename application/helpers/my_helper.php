@@ -231,6 +231,14 @@ function cookies($array, $expiration) {
   }
 }
 
+function session_flashdata($item, $value = '') {
+  $obj = &get_instance();
+  if ($value) {
+    $obj->session->set_flashdata($item, $value);
+  }
+  return $obj->session->flashdata($item);
+}
+
 function sessions($array) {
   foreach ($array as $key => $value) {
     session($key, $value);

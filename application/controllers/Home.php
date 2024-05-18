@@ -2,6 +2,12 @@
 
 class Home extends CI_Controller {
 
+  var $user_model;
+
+  var $input;
+  var $form_validation;
+  var $session;
+
   function __construct() {
     parent::__construct();
     $this->load->model('user_model');
@@ -14,6 +20,7 @@ class Home extends CI_Controller {
       register_form_validate();
       if ($this->form_validation->run() != FALSE) {
         $this->user_model->save($user);
+        session_flashdata('info', 'Registration successful. You can now log in.');
         redirect('login');
       }
     }
@@ -21,7 +28,6 @@ class Home extends CI_Controller {
   }
 
   function login() {
-    $data['message'] = '';
     if ($this->input->post()) {
       list($username, $password) = login_form();
       $user = $this->user_model->read_by_username_and_password($username, $password);
@@ -30,9 +36,11 @@ class Home extends CI_Controller {
         session('email', $user->email);
         redirect('dashboard');
       } else {
-        $data['message'] = 'Invalid username or password. Please try again!';
+        session_flashdata('warning', 'Invalid username or password. Please try again!');
       }
     }
+    $data['info'] = session_flashdata('info');
+    $data['warning'] = session_flashdata('warning');
     $this->load->view(get_theme() . '/home/login', $data);
   }
 
