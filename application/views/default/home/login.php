@@ -19,7 +19,6 @@
   </p>
   <p>
     <?php echo form_submit('submit', 'Login', 'id="login" class="btn btn-success"'); ?>
-    <?php echo anchor('forgot', 'Forgot password?'); ?>
   </p>
   <p>
     No account yet? <?php echo anchor('register', 'Register', 'id="register"'); ?>
