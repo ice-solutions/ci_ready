@@ -1,5 +1,10 @@
 <?php
 
+function form_validation_set_rules($field, $label = '', $rules = array()) {
+  $obj = &get_instance();
+  $obj->form_validation->set_rules($field, $label, $rules);
+}
+
 function validation_errors_array() {
   $obj = &get_instance();
   $validation_errors = $obj->form_validation->error_array();
